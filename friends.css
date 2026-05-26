@@ -1,0 +1,31 @@
+.friend{
+
+display:flex;
+
+align-items:center;
+
+gap:20px;
+
+padding:20px;
+}
+
+.friend img{
+
+width:70px;
+
+height:70px;
+
+border-radius:50%;
+}
+
+.friend h3{
+
+margin:0;
+
+font-size:22px;
+}
+
+.friend p{
+
+color:gray;
+}
