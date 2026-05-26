@@ -1,10 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="css/styles.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Friends - Kokoa Clone</title>
+    <style>
+      /* ===== RESET & BASE ===== */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --kakao-yellow: #fee500;
+        --kakao-brown: #3c1e1e;
+        --bg-white: #ffffff;
+        --bg-gray: #f5f5f5;
+        --text-primary: #1a1a1a;
+        --text-secondary: #888888;
+        --text-muted: #b0b0b0;
+        --border-color: #ebebeb;
+        --nav-height: 60px;
+        --status-bar-height: 44px;
+        --header-height: 56px;
+        --badge-red: #ff4444;
+        --badge-orange: #ff6b35;
+        --max-width: 390px;
+      }
+
+      html, body {
+        font-family: -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+        background-color: #e0e0e0;
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      body {
+        width: 100%;
+        max-width: var(--max-width);
+        background-color: var(--bg-white);
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* ===== STATUS BAR ===== */
+      .status-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: var(--status-bar-height);
+        padding: 0 16px;
+        background-color: var(--bg-white);
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-primary);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .status-bar__column {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .status-bar__column:nth-child(2) {
+        font-size: 15px;
+        font-weight: 600;
+      }
+
+      /* ===== SCREEN HEADER ===== */
+      .screen-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: var(--header-height);
+        padding: 0 18px;
+        background-color: var(--bg-white);
+        border-bottom: 1px solid var(--border-color);
+        position: sticky;
+        top: var(--status-bar-height);
+        z-index: 99;
+      }
+
+      .screen-header__title {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.5px;
+      }
+
+      .screen-header__icons {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .screen-header__icons span {
+        cursor: pointer;
+        color: var(--text-primary);
+        transition: opacity 0.15s ease;
+      }
+
+      .screen-header__icons span:hover {
+        opacity: 0.6;
+      }
+
+      /* ===== FRIENDS DISPLAY LINK ===== */
+      #friends-display-link {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 18px;
+        font-size: 13px;
+        color: var(--text-secondary);
+        background-color: #fafafa;
+        border-bottom: 1px solid var(--border-color);
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+      }
+
+      #friends-display-link:hover {
+        background-color: #f0f0f0;
+      }
+
+      #friends-display-link .fa-chevron-right {
+        margin-left: auto;
+        color: var(--text-muted);
+      }
+
+      /* ===== MAIN FRIENDS SCREEN ===== */
+      .friends-screen {
+        padding-bottom: var(--nav-height);
+        background-color: var(--bg-white);
+      }
+
+      /* ===== USER COMPONENT ===== */
+      .user-component {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 18px;
+      }
+
+      .user-component__column {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      /* ===== AVATAR ===== */
+      .user-component__avatar {
+        border-radius: 30%;
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+
+      .user-component__avatar--xl {
+        width: 60px;
+        height: 60px;
+      }
+
+      .user-component__avatar--sm {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background-color: var(--kakao-yellow);
+      }
+
+      /* ===== USER TEXT ===== */
+      .user-component__text {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      .user-component__title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.2px;
+      }
+
+      .user-component__title--not-bold {
+        font-weight: 400;
+        font-size: 15px;
+      }
+
+      /* ===== CHANNEL SECTION ===== */
+      .friends-screen__channel {
+        border-top: 1px solid var(--border-color);
+        margin-top: 4px;
+      }
+
+      .friends-screen__channel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 18px 8px;
+        font-size: 13px;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+      .friends-screen__channel .user-component__column:last-child > div {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--text-secondary);
+        font-size: 13px;
+      }
+
+      /* ===== NAVIGATION BAR ===== */
+      .nav {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: var(--max-width);
+        height: var(--nav-height);
+        background-color: var(--bg-white);
+        border-top: 1px solid var(--border-color);
+        z-index: 100;
+      }
+
+      .nav__list {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 100%;
+        list-style: none;
+        padding: 0 8px;
+      }
+
+      .nav__btn {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .nav__link {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 8px 16px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        position: relative;
+        transition: color 0.15s ease;
+      }
+
+      .nav__link:hover {
+        color: var(--text-primary);
+      }
+
+      .nav__btn:first-child .nav__link {
+        color: var(--text-primary);
+      }
+
+      /* ===== NOTIFICATION BADGE ===== */
+      .badge {
+        position: absolute;
+        top: 0px;
+        right: 4px;
+        background-color: var(--badge-red);
+        color: white;
+        font-size: 10px;
+        font-weight: 700;
+        min-width: 16px;
+        height: 16px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 4px;
+        line-height: 1;
+      }
+
+      .nav__btn:last-child .nav__link::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        right: 6px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: var(--badge-orange);
+      }
+
+      /* ===== SPLASH SCREEN ===== */
+      #splash-screen {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: var(--max-width);
+        height: 100vh;
+        background-color: var(--kakao-yellow);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        animation: splashFadeOut 0.5s ease 1.2s forwards;
+      }
+
+      #splash-screen .fa-comment {
+        font-size: 64px;
+        color: var(--kakao-brown);
+      }
+
+      @keyframes splashFadeOut {
+        from { opacity: 1; pointer-events: all; }
+        to   { opacity: 0; pointer-events: none; }
+      }
+
+      /* ===== NO MOBILE OVERLAY ===== */
+      #no-mobile {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: var(--kakao-yellow);
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+      }
+
+      #no-mobile span {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--kakao-brown);
+      }
+
+      @media (min-width: 600px) {
+        #no-mobile { display: flex; }
+      }
+
+      ::-webkit-scrollbar { width: 0; }
+
+      .friends-screen > .user-component {
+        border-bottom: 1px solid var(--border-color);
+        padding: 16px 18px;
+      }
+    </style>
   </head>
   <body>
     <div class="status-bar">
@@ -21,7 +368,6 @@
         <i class="fas fa-bolt"></i>
       </div>
     </div>
-
     <header class="screen-header">
       <h1 class="screen-header__title">Friends</h1>
       <div class="screen-header__icons">
@@ -30,12 +376,10 @@
         <span><i class="fas fa-cog fa-lg"></i></span>
       </div>
     </header>
-
     <a id="friends-display-link">
       <i class="fas fa-info-circle"></i> Friends' Names Display
       <i class="fas fa-chevron-right fa-xs"></i>
     </a>
-
     <main class="friends-screen">
       <div class="user-component">
         <div class="user-component__column">
@@ -45,7 +389,6 @@
           />
           <div class="user-component__text">
             <h4 class="user-component__title">Nicolas</h4>
-            <!-- <h6 class="user-component__subtitle">this text whatever</h6> -->
           </div>
         </div>
         <div class="user-component__column"></div>
@@ -76,13 +419,10 @@
         </div>
       </div>
     </main>
-
     <nav class="nav">
       <ul class="nav__list">
         <li class="nav__btn">
-          <a class="nav__link" href="friends.html"
-            ><i class="fas fa-user fa-2x"></i
-          ></a>
+          <a class="nav__link" href="friends.html"><i class="fas fa-user fa-2x"></i></a>
         </li>
         <li class="nav__btn">
           <a class="nav__link" href="chats.html">
@@ -91,28 +431,17 @@
           </a>
         </li>
         <li class="nav__btn">
-          <a class="nav__link" href="find.html"
-            ><i class="fas fa-search fa-2x"></i
-          ></a>
+          <a class="nav__link" href="find.html"><i class="fas fa-search fa-2x"></i></a>
         </li>
         <li class="nav__btn">
-          <a class="nav__link" href="more.html"
-            ><i class="fas fa-ellipsis-h fa-2x"></i
-          ></a>
+          <a class="nav__link" href="more.html"><i class="fas fa-ellipsis-h fa-2x"></i></a>
         </li>
       </ul>
     </nav>
     <div id="splash-screen">
       <i class="fas fa-comment"></i>
     </div>
-
-    <div id="no-mobile">
-      <span>Your screen is too big 😭</span>
-    </div>
-
-    <script
-      src="https://kit.fontawesome.com/6478f529f2.js"
-      crossorigin="anonymous"
-    ></script>
+ 
+    <script src="https://kit.fontawesome.com/6478f529f2.js" crossorigin="anonymous"></script>
   </body>
 </html>
